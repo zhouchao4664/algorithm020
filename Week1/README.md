@@ -108,5 +108,23 @@ add方法里直接调用offer方法，里面第一句就告知，如果元素为
     }
 ```
 
-由上图可知，siftUp方法会根据
+由上图可知，siftUp方法会根据队列里的泛型来判断是否实现了comparator方法来比较有限级，如果实现了，执行siftUpUsingComparator方法，反之执行siftUpComparable方法。两个方法基本一致，这里拿siftUpUsingComparator方法说明
+
+```java
+    private void siftUpUsingComparator(int k, E x) {
+        while (k > 0) {
+            int parent = (k - 1) >>> 1;
+            Object e = queue[parent];
+            if (comparator.compare(x, (E) e) >= 0)
+                break;
+            queue[k] = e;
+            k = parent;
+        }
+        queue[k] = x;
+    }
+```
+
+这里有个巧妙的地方，里用了位运算直接找到了父节点，如果子节点比父节点大就直接跳出循环，如果子节点比父节点小就就交换位置
+
+
 

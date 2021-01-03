@@ -1,24 +1,15 @@
-学习笔记
+package demo.leecode.difficult;
 
-## 分析单词搜索 2 用 Tire 树方式实现的时间复杂度
+import java.util.ArrayList;
+import java.util.List;
 
-### 定义
-
-n： 二维字符网格行数
-
-m：二维字符网格列数
-
-i：单词的个数
-
-j：单词的字符平均个数
-
-
-
-### 代码
-
-```java
+/**
+ * @Auther: zhouc
+ * @Date: 2021/1/2 21:53
+ * @Description: https://leetcode-cn.com/problems/word-search-ii/comments/ 212. 单词搜索 II
+ */
 public class FindWords {
-	private List<String> result = new ArrayList<>();
+    /*private List<String> result = new ArrayList<>();
     int m, n;
     boolean[][] visited;
 
@@ -94,29 +85,59 @@ public class FindWords {
         private final int R = 26;
         String value = null;
         TrieNode[] links = new TrieNode[R];
+    }*/
+
+    //注释部分是自己写的，这个是NO.1大神写的
+    private int n, m;
+    private char[][] board;
+    private boolean[][] used;
+
+    private final int[] dx = new int[]{0, 0, -1, 1};
+    private final int[] dy = new int[]{-1, 1, 0, 0};
+
+    private void clearUsedArray() {
+        for (int i = 0; i < n; ++i)
+            for (int j = 0; j < m; ++j)
+                used[i][j] = false;
     }
+
+    private boolean search(int x, int y, int index, String word) {
+        if (index == word.length()) return true;
+        for (int k = 0; k < 4; ++k) {
+            int xx = x + dx[k], yy = y + dy[k];
+            if (xx < 0 || xx >= n || yy < 0 || yy >= m) continue;
+            if (board[xx][yy] != word.charAt(index) || used[xx][yy]) continue;
+            used[xx][yy] = true;
+            boolean r = search(xx, yy, index + 1, word);
+            used[xx][yy] = false;
+            if (r) return true;
+        }
+        return false;
+    }
+
+    private boolean isFind(String word) {
+        if (word.length() > n * m) return false;
+        for (int i = 0; i < n; ++i)
+            for (int j = 0; j < m; ++j) {
+                if (board[i][j] != word.charAt(0)) continue;
+                clearUsedArray();
+                used[i][j] = true;
+                boolean r = search(i, j, 1, word);
+                if (r) return true;
+            }
+        return false;
+    }
+
+    public List<String> findWords(char[][] board, String[] words) {
+        this.n = board.length;
+        this.m = board[0].length;
+        this.board = board;
+        used = new boolean[n][m];
+
+        ArrayList<String> ans = new ArrayList<>();
+        for (String word : words) if (isFind(word)) ans.add(word);
+        return ans;
+    }
+
+
 }
-```
-
-
-
-### 分析
-
-首先是要把单词加入到trie里这里的时间复杂度是
-
-O(i)
-
-其次是要每个单词在insert的时候都是要一个字符一个字符插入的，这时时间复杂度是
-
-O(i*j)
-
-再次是双层循环遍历网格
-
-O(i*j\*n\*m)
-
-最后是上下左右遍历查询网格，所以最终的时间复杂度是
-
-O(i*j\*n\*m\*j^4)
-
-
-
